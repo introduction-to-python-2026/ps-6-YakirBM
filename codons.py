@@ -1,31 +1,26 @@
 def create_codon_dict(file_path):
-    # 1. יצירת מילון ריק שיכיל את התוצאות
-    codon_dict = {}
-    
-    # 2. פתיחת הקובץ לקריאה
-    # השימוש ב-'with' מבטיח שהקובץ ייסגר אוטומטית בסיום
+    codon_dict = {}  # נבנה כאן את המילון: codon -> amino acid name
+
+    # פותחים את הקובץ לקריאה
     with open(file_path, 'r') as file:
-        
-        # 3. מעבר על הקובץ שורה אחר שורה
         for line in file:
-            # ניקוי רווחים מיותרים וירידות שורה משני הצדדים
-            clean_line = line.strip()
-            
-            # דילוג על שורות ריקות (אם ישנן)
-            if not clean_line:
+            # מסירים רווחים מיותרים בתחילת וסוף השורה, וגם \n
+            line = line.strip()
+
+            # מדלגים על שורות ריקות או שורות הערה
+            if not line or line.startswith('#'):
                 continue
-            
-            # 4. פיצול השורה לרכיבים (קודון וחומצה אמינית)
-            # הפקודה split ללא פרמטרים מפצלת לפי רווחים או טאבים
-            parts = clean_line.split()
-            
-            # בדיקה שיש לנו בדיוק שני חלקים כדי למנוע שגיאות
-            if len(parts) == 2:
-                codon = parts[0]
-                amino_acid = parts[1]
-                
-                # 5. הוספה למילון: המפתח הוא הקודון, הערך הוא החומצה
-                codon_dict[codon] = amino_acid
-                
-    # 6. החזרת המילון המוכן
+
+            # מפרקים את השורה למילים
+            parts = line.split()
+
+            # הטור הראשון הוא הקודון (כמו "AUG")
+            codon = parts[0]
+
+            # שאר המילים – שם החומצה האמינית, יכול להיות מילה אחת או יותר
+            amino_acid = " ".join(parts[1:])
+
+            # מכניסים למילון
+            codon_dict[codon] = amino_acid
+
     return codon_dict
