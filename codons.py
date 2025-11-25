@@ -6,18 +6,24 @@ def create_codon_dict(file_path):
             if not clean_line:
                 continue
             
-            # שינוי קריטי: פיצול לפי פסיק
-            # ברוב הקבצים המדעיים הפורמט הוא Codon,Letter (למשל AAA,K)
-            parts = clean_line.split(',')
+            # ניקוי מרכאות למקרה שהקובץ נראה כמו "AAA","K"
+            clean_line = clean_line.replace('"', '').replace("'", "")
             
-            if len(parts) == 2:
-                # אנו משתמשים ב-strip() גם על החלקים עצמם
-                # כדי להימנע ממצב של ' K' (עם רווח) במקום 'K'
-                codon = parts[0].strip()
-                amino_acid = parts[1].strip()
+            # זיהוי אוטומטי של המפריד (פסיק או רווח/טאב)
+            if ',' in clean_line:
+                parts = clean_line.split(',')
+            else:
+                parts = clean_line.split() # ברירת מחדל: רווחים או טאבים
+            
+            if len(parts) >= 2:
+                key = parts[0].strip()
+                val = parts[1].strip()
                 
-                codon_dict[codon] = amino_acid
-                
+                # הגנה: קודון חייב להיות באורך 3 אותיות (למשל AAA)
+                # זה מונע קריאה של כותרות כמו 'Codon' או שורות זבל
+                if len(key) == 3:
+                    codon_dict[key] = val
+                    
     return codon_dict
 
 
